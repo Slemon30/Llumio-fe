@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import API from "../api";
+import { modelsList } from "../constants/Models";
 const PromptWindow = ({
   value,
   model,
@@ -13,6 +14,11 @@ const PromptWindow = ({
   const textareaRef = useRef(null);
   const [currentChatId, setCurrentChatId] = useState(chatId);
   const [llmResponseLoading, setLlmResponseLoading] = useState(false);
+  const [currentModel, setCurrentModel] = useState(Object);
+
+  useEffect(() => {
+    setCurrentModel(modelsList.find((m) => m.model === model && m.provider === provider))
+  }, [model])
 
   useEffect(() => {
     setCurrentChatId(chatId);
@@ -98,7 +104,7 @@ const PromptWindow = ({
           
           <div className="flex items-center justify-between px-4 pb-2.5">
             <div className="text-[10px] text-white/20 font-mono">
-              877 tokens · 1.5
+              Input Price ${currentModel.inputPrice}  · Output Price ${currentModel.outputPrice}
             </div>
             <button
               type="submit"

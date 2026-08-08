@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import MessageBubble from "./MessageBubble";
 import PromptWindow from "./PromptWindow";
 import Wallet from "./Wallet";
@@ -15,16 +15,26 @@ const Dashboard = () => {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
-  const [estimatedTokens, setEstimatedTokens] = useState(1448);
   const [isNewChatPresent, setIsNewChatPresent] = useState(true);
   const [inputTokens, setInputTokens] = useState(0);
   const [outputTokens, setOutputTokens] = useState(0);
   const [chatId, setChatId] = useState("");
+  const [insufficientTokens, setInsufficientTokens] = useState(false);
 
   const chatEndRef = useRef(null);
-  const textareaRef = useRef(null);
 
-  useEffect(async () => {
+  useEffect(() => {
+  if (insufficientTokens) {
+    const timer = setTimeout(() => {
+      setInsufficientTokens(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }
+}, [insufficientTokens]);
+
+  useEffect(() => {
+    async function fetchUserBalance() {
     try {
       const userBalance = await API.get('user/balance', {
         headers: {
@@ -36,8 +46,10 @@ const Dashboard = () => {
         setWalletBalance(userBalance.data.walletBalance);
       }
     } catch (error) {
-      console.log(`Failed to retrieve user balance`);
+      console.log(`Failed to retrieve user balance : ${error.message}`);
     }
+  }
+  fetchUserBalance();
   }, [])
 
   useEffect(() => {
@@ -45,6 +57,11 @@ const Dashboard = () => {
   }, [messages]);
 
   const handleModelResponse = (data) => {
+
+    if (data.statusCode === 402) {
+      setInsufficientTokens(true);
+      return;
+    }
     const updatedMessages = [
       ...messages,
       {sender: "USER", message: inputText},
@@ -114,6 +131,27 @@ const Dashboard = () => {
         }
       `}</style>
       
+        <AnimatePresence>
+        {insufficientTokens && (
+          <motion.div
+            initial={{ opacity: 0, x: 50, y: 0 }}
+            animate={{ opacity: 1, x: 0, y: 0 }}
+            exit={{ opacity: 0, x: 50 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className="fixed top-5 right-5 z-50 flex items-center gap-3 px-4 py-3 rounded-xl bg-red-950/80 border border-red-500/30 text-red-200 text-sm shadow-2xl backdrop-blur-md"
+          >
+            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+            <span>Low funds: Please top up your wallet.</span>
+            <button
+              onClick={() => setInsufficientTokens(false)}
+              className="ml-2 text-red-400 hover:text-white transition-colors text-xs"
+            >
+              ✕
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ================= SIDEBAR ================= */}
       <Sidebar
       newChat = {isNewChatPresent}

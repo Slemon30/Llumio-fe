@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import API from "../api";
 import { modelsList } from "../constants/Models";
 const PromptWindow = ({
@@ -12,17 +12,9 @@ const PromptWindow = ({
   chatId
 }) => {
   const textareaRef = useRef(null);
-  const [currentChatId, setCurrentChatId] = useState(chatId);
   const [llmResponseLoading, setLlmResponseLoading] = useState(false);
-  const [currentModel, setCurrentModel] = useState(Object);
-
-  useEffect(() => {
-    setCurrentModel(modelsList.find((m) => m.model === model && m.provider === provider))
-  }, [model])
-
-  useEffect(() => {
-    setCurrentChatId(chatId);
-  }, [chatId]);
+  
+  const currentModel = (modelsList.find((m) => m.model === model && m.provider === provider))
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -41,7 +33,6 @@ const PromptWindow = ({
       }
       let response;
       if (newChat === true) {
-        setCurrentChatId("");
         response = await API.post('chat/newchat', {
           model: model,
           provider: provider,
@@ -53,13 +44,11 @@ const PromptWindow = ({
           }
         }
       );
-        setCurrentChatId(response.data.chatId);
         newChatCallback(false);
       }
       else {
-        console.log(currentChatId);
         response = await API.post('chat/chat', {
-          chatId: currentChatId,
+          chatId: chatId,
           model: model,
           provider: provider,
           message: value,
@@ -69,14 +58,19 @@ const PromptWindow = ({
           }
         })
       }
-
+      
       if (response.data.statusCode === 201 || response.data.statusCode === 200) {
         modelCallback(response.data);
         console.log('Message sent successfully');
       }
 
     } catch (error) {
-      console.log(`Failed to send message to model`);
+      console.log(`Failed to send message to model : ${error.message}`);
+      console.log(error.response);
+      if(error.response.status === 402) {
+        console.log("Insufficient credits");
+        modelCallback(error.response.data);
+      }
     }
     setLlmResponseLoading(false);
   }
@@ -84,6 +78,7 @@ const PromptWindow = ({
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
+      handleSendMessage(e);
     }
   };
 

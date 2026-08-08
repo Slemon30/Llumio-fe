@@ -226,6 +226,7 @@ const Dashboard = () => {
           newChat={isNewChatPresent}
           newChatCallback={handleNewChat}
           chatId={chatId}
+          chatIdCallback={setChatId}
         />
 
       </main>

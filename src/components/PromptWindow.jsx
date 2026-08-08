@@ -9,11 +9,12 @@ const PromptWindow = ({
   modelCallback,
   newChat,
   newChatCallback,
-  chatId
+  chatId,
+  chatIdCallback,
 }) => {
   const textareaRef = useRef(null);
   const [llmResponseLoading, setLlmResponseLoading] = useState(false);
-  
+  const [currentChatId, setCurrentChatId] = useState(chatId);
   const currentModel = (modelsList.find((m) => m.model === model && m.provider === provider))
 
   useEffect(() => {
@@ -45,10 +46,12 @@ const PromptWindow = ({
         }
       );
         newChatCallback(false);
+        chatIdCallback(response.data.chatId);
+        setCurrentChatId(response.data.chatId);
       }
       else {
         response = await API.post('chat/chat', {
-          chatId: chatId,
+          chatId: currentChatId,
           model: model,
           provider: provider,
           message: value,

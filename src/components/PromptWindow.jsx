@@ -66,7 +66,6 @@ const PromptWindow = ({
 
     } catch (error) {
       console.log(`Failed to send message to model : ${error.message}`);
-      console.log(error.response);
       if(error.response.status === 402) {
         console.log("Insufficient credits");
         modelCallback(error.response.data);

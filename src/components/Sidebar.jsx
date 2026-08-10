@@ -1,4 +1,3 @@
-import React from "react";
 import ChatHistory from "./ChatHistory";
 import { useState, useEffect } from "react";
 import API from "../api";
@@ -7,11 +6,7 @@ const Sidebar = ({newChat, callback, selectedChatCallback}) => {
   const [chatHistoryList, setChatHistoryList] = useState([]);
   const [chatHistoryExists, setChatHistoryExists] = useState(false);
 
-  useEffect(() => {
-    handleChatHistoryList();
-  }, [newChat])
-
-  const handleChatHistoryList = async () => {
+const handleChatHistoryList = async () => {
     try {
       const chatList = await API.get('/chat/allchats', {
         headers: {
@@ -21,9 +16,14 @@ const Sidebar = ({newChat, callback, selectedChatCallback}) => {
       setChatHistoryList(chatList.data.chats);
       console.log(chatList);
     } catch (error) {
-      console.log("Failed to fetch chat history list");
+      console.log(`Failed to fetch chat history list : ${error.message}`);
     }
   }
+
+  useEffect(() => {
+    handleChatHistoryList();
+  }, [newChat])
+
 
   const createNewChat = (e) => {
     e.preventDefault();

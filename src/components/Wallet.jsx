@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { modelsList } from "../constants/Models";
 
 const Wallet = ({ balance, onTopUp }) => {
   const [isOpen, setIsOpen] = useState(false);

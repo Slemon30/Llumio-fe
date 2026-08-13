@@ -70,9 +70,13 @@ const PromptWindow = ({
 
     } catch (error) {
       console.log(`Failed to send message to model : ${error.message}`);
-      if(error.response.status === 402) {
+      console.log(error.response);
+      if(error?.response?.status === 402) {
         console.log("Insufficient credits");
         modelCallback(error.response.data);
+      }
+      else {
+        modelCallback({status: "Failed", statusCode: 500});
       }
     }
     setLlmResponseLoading(false);

@@ -20,6 +20,7 @@ const Dashboard = () => {
   const [outputTokens, setOutputTokens] = useState(0);
   const [chatId, setChatId] = useState("");
   const [insufficientTokens, setInsufficientTokens] = useState(false);
+  const[serverError, setServerError] = useState(false);
 
   const chatEndRef = useRef(null);
 
@@ -32,6 +33,16 @@ const Dashboard = () => {
     return () => clearTimeout(timer);
   }
 }, [insufficientTokens]);
+
+  useEffect(() => {
+    if (serverError) {
+      const timer = setTimeout(() => {
+        setServerError(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [serverError]);
 
   useEffect(() => {
     async function fetchUserBalance() {
@@ -62,7 +73,11 @@ const Dashboard = () => {
       setInsufficientTokens(true);
       return;
     }
-    setMessages((prev) => [
+    if (data.statusCode >= 500) {
+      setServerError(true);
+      return;
+    }
+     setMessages((prev) => [
       ...prev,
       {sender: "LLM", message: data.llmResponse}
     ]);
@@ -139,7 +154,7 @@ const Dashboard = () => {
       `}</style>
       
         <AnimatePresence>
-        {insufficientTokens && (
+        {(insufficientTokens || serverError) && (
           <motion.div
             initial={{ opacity: 0, x: 50, y: 0 }}
             animate={{ opacity: 1, x: 0, y: 0 }}
@@ -148,7 +163,12 @@ const Dashboard = () => {
             className="fixed top-5 right-5 z-50 flex items-center gap-3 px-4 py-3 rounded-xl bg-red-950/80 border border-red-500/30 text-red-200 text-sm shadow-2xl backdrop-blur-md"
           >
             <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-            <span>Low funds: Please top up your wallet.</span>
+            {insufficientTokens ? (
+              <span>Low funds: Please top up your wallet.</span>
+            ) : (
+              <span>Something went wrong. Please try again later.</span>
+            )}
+            
             <button
               onClick={() => setInsufficientTokens(false)}
               className="ml-2 text-red-400 hover:text-white transition-colors text-xs"

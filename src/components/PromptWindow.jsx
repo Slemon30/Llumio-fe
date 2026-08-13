@@ -11,6 +11,7 @@ const PromptWindow = ({
   newChatCallback,
   chatId,
   chatIdCallback,
+  userMessageCallback,
 }) => {
   const textareaRef = useRef(null);
   const [llmResponseLoading, setLlmResponseLoading] = useState(false);
@@ -26,11 +27,13 @@ const PromptWindow = ({
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
+    if (!value.trim() || llmResponseLoading) {
+        return;
+    }
+    userMessageCallback(value);
     setLlmResponseLoading(true);
     try {
-      if (!value.trim()) {
-        return;
-      }
+      
       let response;
       if (newChat === true) {
         response = await API.post('chat/newchat', {

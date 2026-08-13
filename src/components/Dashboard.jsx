@@ -57,22 +57,29 @@ const Dashboard = () => {
   }, [messages]);
 
   const handleModelResponse = (data) => {
-
+    setIsStreaming(false);
     if (data.statusCode === 402) {
       setInsufficientTokens(true);
       return;
     }
-    const updatedMessages = [
-      ...messages,
-      {sender: "USER", message: inputText},
+    setMessages((prev) => [
+      ...prev,
       {sender: "LLM", message: data.llmResponse}
-    ];
-    setMessages(updatedMessages);
+    ]);
     setInputText("");
     setInputTokens(data.inputTokens);
     setOutputTokens(data.outputTokens);
     setWalletBalance(data.walletBalance);
   };
+
+  const handleUserMessage = (data) => {
+    setMessages((prev) => [
+      ...prev,
+      {sender: "USER", message: data}
+    ]);
+    setInputText("");
+    setIsStreaming(true);
+  }
 
   const handleNewChat = (response) => {
     setIsNewChatPresent(response);
@@ -205,10 +212,23 @@ const Dashboard = () => {
                 ))}
                 
                 {isStreaming && (
-                  <div className="flex items-center gap-2 text-xs text-white/20 font-mono pl-4">
-                    <span className="w-1 h-1 rounded-full bg-white/20 animate-pulse" />
-                    <span>Streaming...</span>
+                  <div className="flex items-center gap-2 text-md text-white/40 font-mono pl-4">
+                    <div className="flex items-center gap-1">
+                      {[0, 1, 2].map((i) => (
+                      <motion.span
+                        key={i}
+                        className="w-1.5 h-1.5 rounded-full bg-white/60"
+                        animate={{ scale: [0.8, 1.4, 0.8], opacity: [0.3, 1, 0.3] }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 1.5,
+                          delay: i * 0.2,
+                          ease: "easeInOut",
+                        }}
+                      />
+                    ))}
                   </div>
+                </div>
                 )}
               </div>
             )}
@@ -227,6 +247,7 @@ const Dashboard = () => {
           newChatCallback={handleNewChat}
           chatId={chatId}
           chatIdCallback={setChatId}
+          userMessageCallback={handleUserMessage}
         />
 
       </main>

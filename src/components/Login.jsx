@@ -45,7 +45,7 @@ const Login = () => {
       
       setFailedLogin(true);
     } catch (error) {
-      console.log('User Login Failed');
+      console.log(`User Login Failed : ${error.message}`);
       setFailedLogin(true);
     }
     setIsLoading(false);
@@ -89,7 +89,7 @@ const Login = () => {
           <span className="object-center text-2xl font-bold tracking-[0.18em] uppercase text-white/90">
             Llum<span className="text-center text-white/40 font-medium">io</span>
           </span>
-          <p className="text-[10px] text-white/20 uppercase tracking-widest mt-1">
+          <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1">
             Unified AI Engine
           </p>
         </motion.div>

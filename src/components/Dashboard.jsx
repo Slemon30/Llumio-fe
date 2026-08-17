@@ -5,6 +5,7 @@ import PromptWindow from "./PromptWindow";
 import Wallet from "./Wallet";
 import ModelSelector from "./ModelSelector";
 import Sidebar from "./Sidebar";
+import ShareWindow from "./ShareWindow";
 import { modelsList } from "../constants/Models";
 import API from "../api";
 
@@ -201,12 +202,16 @@ const Dashboard = () => {
             selectedProvider={setActiveProvider}
             isStreaming={isStreaming}
           />
-
+          <div className = "flex items-center gap-4">
+            {isNewChatPresent ? (<></>) : 
+            (<ShareWindow/>)
+          }
           {/* Decoupled Wallet Widget */}
           <Wallet
             balance={walletBalance} 
             onTopUp={(amt) => setWalletBalance((prev) => prev + amt)}
           />
+          </div>
         </div>
 
         {/* Messages Viewport */}

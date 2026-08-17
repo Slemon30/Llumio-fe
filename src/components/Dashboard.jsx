@@ -20,7 +20,7 @@ const Dashboard = () => {
   const [outputTokens, setOutputTokens] = useState(0);
   const [chatId, setChatId] = useState("");
   const [insufficientTokens, setInsufficientTokens] = useState(false);
-  const[serverError, setServerError] = useState(false);
+  const [serverError, setServerError] = useState(false);
 
   const chatEndRef = useRef(null);
 
@@ -71,10 +71,12 @@ const Dashboard = () => {
     setIsStreaming(false);
     if (data.statusCode === 402) {
       setInsufficientTokens(true);
+      setMessages((prev) => prev.slice(0, -1))
       return;
     }
     if (data.statusCode >= 500) {
       setServerError(true);
+      setMessages((prev) => prev.slice(0, -1))
       return;
     }
      setMessages((prev) => [

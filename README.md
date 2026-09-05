@@ -1,18 +1,23 @@
-# React + Vite
+# Llumio ⚡
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> A high-performance, multi-LLM chat platform supporting real-time mid-conversation model switching with context retention and collaborative chat sharing.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🌟 Key Features
 
-## React Compiler
+- **Mid-Conversation Model Switching:** Seamlessly swap between LLM providers (OpenAI, Anthropic, Google Gemini, Ollama) mid-thread without dropping conversation context or history.
+- **Context Retention Pipeline:** Smart context trimming and normalization ensures downstream models receive properly formatted system instructions and message history during transitions.
+- **Collaborative Chat Sharing:** Generate shareable public or workspace links with granular permission controls for team collaboration.
+- **Session & History Persistence:** Efficient state management and database persistence for high-throughput messaging.
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+---
 
-Note: This will impact Vite dev & build performances.
+## 🛠️ Tech Stack
 
-## Expanding the ESLint configuration
+- **Frontend:** React+Vite, Tailwind CSS
+- **Backend:** Node.js, Express
+- **Caching & Messaging:** Redis
+- **Database:** MongoDB / PostgreSQL
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
